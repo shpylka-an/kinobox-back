@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+
+  node:
+    restart: always
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/var/www/kinobox
+    links:
+      - postgres
+    command: npm run start:dev
+
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - 5432:${DB_PORT}
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
