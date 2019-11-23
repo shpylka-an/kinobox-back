@@ -21,13 +21,7 @@ export class AuthService {
     return null;
   }
 
-  public async login(credentials: LoginDto): Promise<any | { status: number }> {
-    const user = await this.validate(credentials.username, credentials.password);
-
-    if (!user) {
-      return {status: 404};
-    }
-
+  private authenticated(user: User) {
     const payload = {username: user.username, sub: user.id};
     const accessToken = this.jwtService.sign(payload);
 
@@ -35,7 +29,26 @@ export class AuthService {
       status: 'success',
       expires_in: 3600,
       access_token: accessToken,
+      // TODO replace user obj by something like spatie/fractal
+      user: {
+        id: user.id,
+        username: user.username,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        avatar: user.avatar,
+        email: user.email,
+      },
     };
+  }
+
+  public async login(credentials: LoginDto): Promise<any | { status: number }> {
+    const user = await this.validate(credentials.username, credentials.password);
+
+    if (!user) {
+      return {status: 404};
+    }
+
+    return this.authenticated(user);
   }
 
   public async register(userData: RegisterDto): Promise<any> {
@@ -45,13 +58,6 @@ export class AuthService {
       return {status: 'error on registration'};
     }
 
-    const payload = { username: user.username, sub: user.id };
-    const accessToken = this.jwtService.sign(payload);
-
-    return {
-      status: 'success',
-      expires_in: 3600,
-      access_token: accessToken,
-    };
+    return this.authenticated(user);
   }
 }
