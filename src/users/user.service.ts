@@ -1,15 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
 
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
   ) {}
+
+  async findAll(page: number, perPage: number): Promise<any> {
+    const [data, count] = await this.userRepository.findAndCount({
+      skip: perPage * (page - 1),
+      take: perPage,
+    });
+
+    return {
+      data,
+      total: count,
+      page,
+      pageCount: Math.ceil(count / perPage),
+    };
+  }
 
   async findOne(username: string): Promise<User> {
     return await this.userRepository.findOne({
