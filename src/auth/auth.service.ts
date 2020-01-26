@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
 import { UserService } from '../users/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -12,24 +13,22 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async validate(username: string, password: string): Promise<User | null> {
-    const user = await this.userService.findOne(username);
-    // TODO instead add password hash check
-    if (user && user.password === password) {
+  private async validate(email: string, password: string): Promise<User | null> {
+    const user = await this.userService.findOne(email);
+    if (user && await bcrypt.compare(password, user.password)) {
       return user;
     }
     return null;
   }
 
   private authenticated(user: User) {
-    const payload = {username: user.username, sub: user.id};
+    const payload = {sub: user.id, name: user.username};
     const accessToken = this.jwtService.sign(payload);
 
     return {
       status: 'success',
       expires_in: 3600,
       access_token: accessToken,
-      // TODO replace user obj by something like spatie/fractal
       user: {
         id: user.id,
         username: user.username,
@@ -41,17 +40,18 @@ export class AuthService {
     };
   }
 
-  public async login(credentials: LoginDto): Promise<any | { status: number }> {
-    const user = await this.validate(credentials.username, credentials.password);
+  public async login(credentials: LoginDto): Promise<any> {
+    const user = await this.validate(credentials.email, credentials.password);
 
     if (!user) {
-      return {status: 404};
+      throw new NotFoundException('Invalid credentials', 'User not found');
     }
 
     return this.authenticated(user);
   }
 
   public async register(userData: RegisterDto): Promise<any> {
+    userData.password = await bcrypt.hash(userData.password, 12);
     const user = await this.userService.create(userData);
 
     if (!user) {
