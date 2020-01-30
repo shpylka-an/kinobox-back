@@ -11,7 +11,7 @@ services:
       - .:/var/www/kinobox
     links:
       - postgres
-    command: npm run start:dev
+    command: npm run start:debug
 
   postgres:
     image: postgres:9.6-alpine

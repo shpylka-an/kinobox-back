@@ -1,5 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Get, HttpCode, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
+import { CurrentUser } from './user.decorator';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UserController {
@@ -13,8 +16,10 @@ export class UserController {
     return await this.userService.findAll(page, perPage);
   }
 
-  // @Get(':id')
-  // show(@Param() id): Promise<User> {
-  //   // return this.userService.
-  // }
+  @Post('current')
+  @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
+  currentUser(@CurrentUser() user): Promise<User> {
+    return this.userService.findOneById(user.userId);
+  }
 }
