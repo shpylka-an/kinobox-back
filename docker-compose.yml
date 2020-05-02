@@ -14,7 +14,7 @@ services:
     command: npm run start:debug
 
   postgres:
-    image: postgres:9.6-alpine
+    image: postgres
     ports:
       - 5432:${DB_PORT}
     environment:

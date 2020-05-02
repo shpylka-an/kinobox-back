@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MovieModule } from './movie/movie.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), AuthModule, UserModule],
+  imports: [TypeOrmModule.forRoot(), AuthModule, UserModule, MovieModule],
   exports: [TypeOrmModule],
   controllers: [AppController],
   providers: [
