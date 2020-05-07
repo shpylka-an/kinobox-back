@@ -8,6 +8,6 @@ export class CreateMovieDto {
   @IsNotEmpty()
   description: string;
 
-  @IsDateString()
+  // @IsDateString()
   releaseDate: Date;
 }

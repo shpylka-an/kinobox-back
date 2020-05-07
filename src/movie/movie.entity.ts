@@ -18,9 +18,9 @@ export class Movie {
   @Column({type: 'date'})
   releaseDate: Date;
 
-  @Column()
+  @Column({nullable: true})
   preview?: string;
 
-  @Column()
+  @Column({nullable: true})
   videoUrl?: string;
 }
