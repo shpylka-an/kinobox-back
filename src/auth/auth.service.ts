@@ -28,6 +28,11 @@ export class AuthService {
     return {
       expires_in: 86400,
       access_token: accessToken,
+      user: {
+        name: user.username,
+        avatar: user.avatar,
+        email: user.email,
+      },
     };
   }
 
