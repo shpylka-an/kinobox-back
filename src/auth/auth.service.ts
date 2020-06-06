@@ -1,28 +1,43 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '../users/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../users/user.entity';
+import { RoleService } from '../users/roles/role.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly roleService: RoleService,
   ) {}
 
-  private async validate(email: string, password: string): Promise<User | null> {
+  private async validate(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await this.userService.findOneByEmail(email);
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
     return null;
   }
 
-  private authenticated(user: User) {
-    const payload = {sub: user.id, name: user.username};
+  private async authenticated(user: User) {
+    const roles = await this.roleService.getUserRoles(user.id);
+
+    const payload = {
+      sub: user.id,
+      name: user.username,
+      roles,
+    };
     const accessToken = this.jwtService.sign(payload);
 
     return {

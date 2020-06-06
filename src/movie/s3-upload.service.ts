@@ -22,8 +22,8 @@ export class S3UploadService {
       },
     }),
   }).fields([
-    {name: 'preview', maxCount: 1},
-    {name: 'movie', maxCount: 1},
+    { name: 'preview', maxCount: 1 },
+    { name: 'movie', maxCount: 1 },
   ]);
 
   async fileUpload(@Req() req, @Res() res) {
@@ -35,7 +35,7 @@ export class S3UploadService {
         return res.status(201).json(req.files[0].location);
       });
     } catch (err) {
-      return res.status(500).json({err});
+      return res.status(500).json({ err });
     }
   }
 }

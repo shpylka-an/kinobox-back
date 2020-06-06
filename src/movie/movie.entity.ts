@@ -2,25 +2,24 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Movie {
-
   @PrimaryColumn()
   id?: number;
 
   @Column()
   title: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   slug?: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   description: string;
 
-  @Column({type: 'date'})
+  @Column({ type: 'date' })
   releaseDate: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   preview?: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   videoUrl?: string;
 }

@@ -4,10 +4,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-
-  constructor(
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async findAll(page: number, perPage: number): Promise<any> {
     const [data, count] = await this.userRepository.findAndCount({

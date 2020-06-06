@@ -7,13 +7,13 @@ import { Injectable } from '@nestjs/common';
 export class UserRepository extends Repository<User> {
   public findOneById(id: number) {
     return this.findOne({
-      where: {id},
+      where: { id },
     });
   }
 
   public findOneByEmail(email: string) {
     return this.findOne({
-      where: {email},
+      where: { email },
     });
   }
 }

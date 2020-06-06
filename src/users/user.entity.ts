@@ -1,10 +1,18 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Role } from './roles/role.entity';
 
-@Entity()
-@Unique(['email'])
+@Entity('users')
+@Unique(['email', 'username'])
 export class User {
-
   @PrimaryGeneratedColumn()
   id?: number;
 
@@ -12,13 +20,7 @@ export class User {
   @Column()
   username: string;
 
-  @Column({nullable: true})
-  firstName?: string;
-
-  @Column({nullable: true})
-  lastName?: string;
-
-  @Column({nullable: true})
+  @Column({ nullable: true })
   avatar?: string;
 
   @Index()
@@ -28,4 +30,15 @@ export class User {
   @Column()
   @Exclude()
   password: string;
+
+  @ManyToMany(
+    type => Role,
+    role => role.users,
+  )
+  @JoinTable({
+    name: 'users_roles',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles?: Role[];
 }

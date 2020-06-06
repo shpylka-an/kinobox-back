@@ -1,4 +1,13 @@
-import { ClassSerializerInterceptor, Controller, Get, HttpCode, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { CurrentUser } from './user.decorator';
@@ -9,10 +18,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async index(
-    @Query('page') page: number,
-    @Query('perPage') perPage: number,
-  ) {
+  async index(@Query('page') page: number, @Query('perPage') perPage: number) {
     return await this.userService.findAll(page, perPage);
   }
 

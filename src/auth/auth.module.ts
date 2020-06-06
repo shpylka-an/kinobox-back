@@ -5,14 +5,16 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../users/user.module';
 import { JwtStrategy } from './jwt.strategy';
+import { RolesModule } from '../users/roles/roles.module';
 
 @Module({
   imports: [
     PassportModule,
     UserModule,
+    RolesModule,
     JwtModule.register({
       secret: 'secret', // TODO fix 'process.env.JWT_SECRET' - undefined only here
-      signOptions: {expiresIn: '1d'},
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   providers: [AuthService, JwtStrategy],
