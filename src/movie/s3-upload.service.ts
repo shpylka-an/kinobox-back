@@ -1,21 +1,22 @@
 import { Injectable, NotFoundException, Req, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as multerS3 from 'multer-s3';
 import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
-import * as multerS3 from 'multer-s3';
-
-const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
-const s3 = new AWS.S3();
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
 
 @Injectable()
 export class S3UploadService {
+  constructor(private readonly configService: ConfigService) {
+    AWS.config.update({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+    });
+  }
+
   private upload = multer({
     storage: multerS3({
-      s3,
-      bucket: AWS_S3_BUCKET_NAME,
+      s3: new AWS.S3(),
+      bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
       acl: 'public-read',
       key: (req, file, cb) => {
         cb(null, `previews/${Date.now().toString()} - ${file.originalname}`);
