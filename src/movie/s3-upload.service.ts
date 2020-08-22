@@ -19,7 +19,8 @@ export class S3UploadService {
       bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
       acl: 'public-read',
       key: (req, file, cb) => {
-        cb(null, `previews/${Date.now().toString()} - ${file.originalname}`);
+        const folder = `${file.fieldname}s`;
+        cb(null, `${folder}/${Date.now().toString()} - ${file.originalname}`);
       },
     }),
   }).fields([
@@ -33,7 +34,7 @@ export class S3UploadService {
         if (err) {
           throw new NotFoundException(`Failed to upload file: ${err}`);
         }
-        return res.status(201).json(req.files[0].location);
+        return res.status(201).json({ message: 'Uploaded' });
       });
     } catch (err) {
       return res.status(500).json({ err });
