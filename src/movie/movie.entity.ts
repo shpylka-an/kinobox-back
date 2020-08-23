@@ -1,15 +1,15 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Movie {
-  @PrimaryColumn()
-  id?: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   title: string;
 
   @Column({ unique: true })
-  slug?: string;
+  slug: string;
 
   @Column({ type: 'text' })
   description: string;

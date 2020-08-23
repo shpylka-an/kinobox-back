@@ -1,24 +1,26 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { MovieService } from './movie.service';
-import { S3UploadService } from './s3-upload.service';
+import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Crud, CrudController } from '@nestjsx/crud';
+
+import { JwtAuthGuard } from '../shared/jwt-auth.guard';
 import { RolesGuard } from '../shared/roles.guard';
 import { Roles } from '../shared/roles.decorator';
-import { JwtAuthGuard } from '../shared/jwt-auth.guard';
+import { MovieService } from './movie.service';
+import { S3UploadService } from './s3-upload.service';
+import { Movie } from './movie.entity';
 
+@Roles('admin')
+@Crud({
+  model: {
+    type: Movie,
+  },
+})
 @Controller('movies')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class MovieController {
+export class MovieController implements CrudController<Movie> {
   constructor(
-    private readonly moviesService: MovieService,
+    public readonly service: MovieService,
     private readonly s3UploadService: S3UploadService,
   ) {}
-
-  @Post()
-  @Roles('admin')
-  create(@Body() createMovieDto: CreateMovieDto) {
-    return this.moviesService.create(createMovieDto);
-  }
 
   @Post('upload')
   async upload(@Req() req, @Res() res) {
