@@ -22,4 +22,7 @@ export class Movie {
 
   @Column({ nullable: true })
   videoUrl?: string;
+
+  @Column({default: false})
+  isPublished?: boolean;
 }

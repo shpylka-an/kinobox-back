@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException, Req, Res } from '@nestjs/common';
+import { Injectable, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as multerS3 from 'multer-s3';
 import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
+import { MovieService } from './movie.service';
+import { UpdateMovieFilesDto } from './dto/update-movie-files.dto';
 
 @Injectable()
 export class S3UploadService {
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly movieService: MovieService,
+  ) {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
@@ -28,16 +33,30 @@ export class S3UploadService {
     { name: 'movie', maxCount: 1 },
   ]);
 
-  async fileUpload(@Req() req, @Res() res) {
-    try {
+  private uploadToS3(
+    @Req() req,
+    @Res() res,
+  ): Promise<{ previewUrl: string; videoUrl: string }> {
+    return new Promise((resolve, reject) => {
       this.upload(req, res, err => {
         if (err) {
-          throw new NotFoundException(`Failed to upload file: ${err}`);
+          reject(err);
+        } else {
+          const previewUrl = req.files.preview[0].location;
+          const videoUrl = req.files.movie[0].location;
+          resolve({ previewUrl, videoUrl });
         }
-        return res.status(201).json({ message: 'Uploaded' });
       });
-    } catch (err) {
-      return res.status(500).json({ err });
-    }
+    });
+  }
+
+  async fileUpload(
+    @Req() req,
+    @Res() res,
+    id: number,
+  ): Promise<UpdateMovieFilesDto> {
+    const { previewUrl, videoUrl } = await this.uploadToS3(req, res);
+    await this.movieService.updateFiles({ id, previewUrl, videoUrl });
+    return { id, previewUrl, videoUrl };
   }
 }

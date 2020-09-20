@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Crud, CrudController } from '@nestjsx/crud';
 
 import { JwtAuthGuard } from '../shared/jwt-auth.guard';
@@ -22,10 +22,11 @@ export class MovieController implements CrudController<Movie> {
     private readonly s3UploadService: S3UploadService,
   ) {}
 
-  @Post('upload')
-  async upload(@Req() req, @Res() res) {
+  @Post(':id/upload')
+  async upload(@Req() req, @Res() res, @Param('id') id) {
     try {
-      await this.s3UploadService.fileUpload(req, res);
+      const data = await this.s3UploadService.fileUpload(req, res, id);
+      return res.json({ data });
     } catch (err) {
       return res.status(500).json({
         error: err.message,
