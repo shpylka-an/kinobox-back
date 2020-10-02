@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PublicFile } from '../files/file.entity';
 
 @Entity()
 export class Movie {
@@ -17,12 +24,14 @@ export class Movie {
   @Column({ type: 'date' })
   releaseDate: Date;
 
-  @Column({ nullable: true })
-  preview?: string;
+  @JoinColumn()
+  @OneToOne(() => PublicFile, { eager: true, nullable: true })
+  preview?: PublicFile;
 
-  @Column({ nullable: true })
-  videoUrl?: string;
+  @JoinColumn()
+  @OneToOne(() => PublicFile, { eager: true, nullable: true })
+  videoFile?: string;
 
-  @Column({default: false})
+  @Column({ default: false })
   isPublished?: boolean;
 }

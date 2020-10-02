@@ -10,6 +10,7 @@ import { MovieModule } from './movie/movie.module';
 import { SharedModule } from './shared/shared.module';
 import { DatabaseConfig } from './database.config';
 import { config } from './config';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { config } from './config';
     UserModule,
     MovieModule,
     SharedModule,
+    FilesModule,
   ],
   exports: [TypeOrmModule],
   controllers: [AppController],
