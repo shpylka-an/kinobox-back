@@ -32,8 +32,6 @@
     "@nestjs/platform-express": "^6.11.11",
     "@nestjs/swagger": "^4.6.1",
     "@nestjs/typeorm": "^6.3.4",
-    "@nestjsx/crud": "^4.6.2",
-    "@nestjsx/crud-typeorm": "^4.6.2",
     "@types/uuid": "^8.3.0",
     "aws-sdk": "^2.766.0",
     "bcryptjs": "^2.4.3",

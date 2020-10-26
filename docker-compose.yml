@@ -13,6 +13,7 @@ services:
     links:
       - postgres
     command: npm run start:debug
+    container_name: node
 
   postgres:
     image: postgres:12
@@ -23,3 +24,4 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_HOST=${DB_HOST}
+    container_name: db

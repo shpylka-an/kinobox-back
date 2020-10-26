@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateMovieDto {
   @IsNotEmpty()
@@ -7,6 +7,5 @@ export class CreateMovieDto {
   @IsNotEmpty()
   description: string;
 
-  // @IsDateString()
   releaseDate: Date;
 }

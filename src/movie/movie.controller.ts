@@ -1,31 +1,48 @@
 import {
-  Controller,
+  Body,
+  Controller, Delete, Get,
   HttpException,
   HttpStatus,
-  Param,
+  Param, Patch,
   Post,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Crud, CrudController } from '@nestjsx/crud';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../shared/jwt-auth.guard';
 import { RolesGuard } from '../shared/roles.guard';
 import { Roles } from '../shared/roles.decorator';
 import { MovieService } from './movie.service';
 import { Movie } from './movie.entity';
+import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Roles('admin')
-@Crud({
-  model: {
-    type: Movie,
-  },
-})
 @Controller('movies')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class MovieController implements CrudController<Movie> {
-  constructor(public readonly service: MovieService) {}
+export class MovieController {
+  constructor(public readonly movieService: MovieService) {}
+
+  @Post()
+  async create(@Body() createMovieDto: CreateMovieDto) {
+    return await this.movieService.create(createMovieDto);
+  }
+
+  @Get()
+  async findAll(): Promise<Movie[]> {
+    return this.movieService.findAll();
+  }
+
+  @Patch('/:id')
+  async update(@Body() updateMovieDto: Partial<UpdateMovieDto>, @Param('id') id) {
+    return await this.movieService.update(id, updateMovieDto);
+  }
+
+  @Delete('/:id')
+  async delete(@Param('id') id: string) {
+    await this.movieService.delete(id);
+  }
 
   @Post(':id/upload')
   @UseInterceptors(
@@ -36,7 +53,7 @@ export class MovieController implements CrudController<Movie> {
   )
   async upload(@UploadedFiles() files, @Param('id') id: number) {
     try {
-      return await this.service.uploadFiles(
+      return await this.movieService.uploadFiles(
         id,
         files.preview[0],
         files.videoFile[0],

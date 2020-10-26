@@ -1,16 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Movie } from './movie.entity';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { MovieRepository } from './movie.repository';
 import { FilesService } from '../files/files.service';
+import { Movie } from './movie.entity';
+import { UpdateMovieDto } from './dto/update-movie.dto';
+import { CreateMovieDto } from './dto/create-movie.dto';
 
 @Injectable()
-export class MovieService extends TypeOrmCrudService<Movie> {
+export class MovieService {
   constructor(
     private readonly movieRepo: MovieRepository,
     private readonly filesService: FilesService,
-  ) {
-    super(movieRepo);
+  ) {}
+
+  async findAll(): Promise<Movie[]> {
+    return await this.movieRepo.find();
+  }
+
+  async create(data: CreateMovieDto): Promise<Movie> {
+    return await this.movieRepo.save(data);
+  }
+
+  async update(id: string, data: Partial<UpdateMovieDto>): Promise<UpdateResult> {
+    return await this.movieRepo.update(id, data);
+  }
+
+  async delete(id: string): Promise<DeleteResult> {
+    return await this.movieRepo.delete(id);
   }
 
   async uploadFiles(
