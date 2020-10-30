@@ -11,6 +11,7 @@ import { SharedModule } from './shared/shared.module';
 import { DatabaseConfig } from './database.config';
 import { config } from './config';
 import { FilesModule } from './files/files.module';
+import { ActorsModule } from './actors/actors.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FilesModule } from './files/files.module';
     MovieModule,
     SharedModule,
     FilesModule,
+    ActorsModule,
   ],
   exports: [TypeOrmModule],
   controllers: [AppController],

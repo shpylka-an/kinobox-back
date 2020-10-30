@@ -8,4 +8,6 @@ export class CreateMovieDto {
   description: string;
 
   releaseDate: Date;
+
+  actors: number[];
 }

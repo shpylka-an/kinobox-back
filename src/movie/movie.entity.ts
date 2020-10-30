@@ -2,12 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PublicFile } from '../files/file.entity';
+import { Actor } from '../actors/actor.entity';
 
-@Entity()
+@Entity('movies')
 export class Movie {
   @PrimaryGeneratedColumn()
   id: number;
@@ -34,4 +37,15 @@ export class Movie {
 
   @Column({ default: false })
   isPublished?: boolean;
+
+  @ManyToMany(
+    () => Actor,
+    actor => actor.movies,
+  )
+  @JoinTable({
+    name: 'actors_movies',
+    joinColumn: { name: 'movie_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'actor_id', referencedColumnName: 'id' },
+  })
+  cast: Actor[];
 }
