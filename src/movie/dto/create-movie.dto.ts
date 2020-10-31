@@ -1,4 +1,5 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { Ratings } from '../movie.entity';
 
 export class CreateMovieDto {
   @IsNotEmpty()
@@ -10,4 +11,7 @@ export class CreateMovieDto {
   releaseDate: Date;
 
   actors: number[];
+
+  @IsEnum(Ratings)
+  rating: Ratings;
 }

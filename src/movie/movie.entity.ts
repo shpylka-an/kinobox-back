@@ -10,6 +10,14 @@ import {
 import { PublicFile } from '../files/file.entity';
 import { Actor } from '../actors/actor.entity';
 
+export enum Ratings {
+  TVMA = 'TV-MA',
+  TV14 = 'TV-14',
+  TVPG = 'TV-PG',
+  R = 'R',
+  PG13 = 'PG-13',
+}
+
 @Entity('movies')
 export class Movie {
   @PrimaryGeneratedColumn()
@@ -24,18 +32,18 @@ export class Movie {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', name: 'release_date' })
   releaseDate: Date;
 
-  @JoinColumn()
+  @JoinColumn({ name: 'preview_id' })
   @OneToOne(() => PublicFile, { eager: true, nullable: true })
   preview?: PublicFile;
 
-  @JoinColumn()
+  @JoinColumn({ name: 'video_file_id' })
   @OneToOne(() => PublicFile, { eager: true, nullable: true })
   videoFile?: string;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'is_published' })
   isPublished?: boolean;
 
   @ManyToMany(
@@ -48,4 +56,15 @@ export class Movie {
     inverseJoinColumn: { name: 'actor_id', referencedColumnName: 'id' },
   })
   cast: Actor[];
+
+  @Column({
+    type: 'enum',
+    enum: Ratings,
+  })
+  rating: Ratings;
+
+  @Column({
+    type: 'int',
+  })
+  duration: number;
 }
