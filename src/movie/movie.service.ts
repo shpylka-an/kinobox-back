@@ -6,6 +6,7 @@ import { Movie } from './movie.entity';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { ActorsService } from '../actors/actors.service';
+import { DirectorsService } from '../directors/directors.service';
 
 @Injectable()
 export class MovieService {
@@ -13,21 +14,20 @@ export class MovieService {
     private readonly movieRepository: MovieRepository,
     private readonly filesService: FilesService,
     private readonly actorsService: ActorsService,
+    private readonly directorsService: DirectorsService,
   ) {}
 
   async findAll(): Promise<Movie[]> {
     return await this.movieRepository.find();
   }
 
-  async create(data: CreateMovieDto): Promise<Movie> {
-    if (data.actors) {
-      const actorsIds = data.actors;
-      delete data.actors;
-
-      const actors = await this.actorsService.getActorsByIds(actorsIds);
-      return await this.movieRepository.createNewMovie(data, actors);
-    }
-    return await this.movieRepository.createNewMovie(data);
+  async create(createMovieDto: CreateMovieDto): Promise<Movie> {
+    const { attributes, relationships } = createMovieDto;
+    const actors = await this.actorsService.getActorsByIds(relationships.actors);
+    const directors = await this.directorsService.getDirectorsByIds(
+      relationships.directors,
+    );
+    return await this.movieRepository.createNewMovie(attributes, actors, directors);
   }
 
   async update(

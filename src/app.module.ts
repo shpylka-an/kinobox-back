@@ -12,6 +12,7 @@ import { DatabaseConfig } from './database.config';
 import { config } from './config';
 import { FilesModule } from './files/files.module';
 import { ActorsModule } from './actors/actors.module';
+import { DirectorsModule } from './directors/directors.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ActorsModule } from './actors/actors.module';
     SharedModule,
     FilesModule,
     ActorsModule,
+    DirectorsModule,
   ],
   exports: [TypeOrmModule],
   controllers: [AppController],

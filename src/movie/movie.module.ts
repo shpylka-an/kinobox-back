@@ -5,6 +5,7 @@ import { MovieService } from './movie.service';
 import { MovieRepository } from './movie.repository';
 import { FilesModule } from '../files/files.module';
 import { ActorsModule } from '../actors/actors.module';
+import { DirectorsModule } from '../directors/directors.module';
 
 @Module({
   providers: [MovieService],
@@ -12,6 +13,7 @@ import { ActorsModule } from '../actors/actors.module';
     TypeOrmModule.forFeature([MovieRepository]),
     FilesModule,
     ActorsModule,
+    DirectorsModule,
   ],
   controllers: [MovieController],
 })

@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Movie } from '../movie/movie.entity';
 
-@Entity('actors')
-export class Actor {
+@Entity()
+export class Director {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,7 +14,7 @@ export class Actor {
 
   @ManyToMany(
     () => Movie,
-    movie => movie.cast,
+    movie => movie.directors,
   )
   movies: Movie[];
 }

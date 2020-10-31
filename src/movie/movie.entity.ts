@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { PublicFile } from '../files/file.entity';
 import { Actor } from '../actors/actor.entity';
+import { Director } from '../directors/director.entity';
 
 export enum Ratings {
   TVMA = 'TV-MA',
@@ -56,6 +57,17 @@ export class Movie {
     inverseJoinColumn: { name: 'actor_id', referencedColumnName: 'id' },
   })
   cast: Actor[];
+
+  @ManyToMany(
+    () => Director,
+    director => director.movies,
+  )
+  @JoinTable({
+    name: 'directors_movies',
+    joinColumn: { name: 'movie_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'director_id', referencedColumnName: 'id' },
+  })
+  directors: Director[];
 
   @Column({
     type: 'enum',
