@@ -17,4 +17,8 @@ export class ActorsService {
   async getActorsByIds(ids: number[]) {
     return this.actorsRepository.find({ id: In(ids) });
   }
+
+  async findAll(): Promise<Actor[]> {
+    return await this.actorsRepository.find();
+  }
 }

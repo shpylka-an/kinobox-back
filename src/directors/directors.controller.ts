@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Director } from './director.entity';
 import { DirectorsService } from './directors.service';
 
@@ -9,5 +9,10 @@ export class DirectorsController {
   @Post()
   async create(@Body() director: Director) {
     return this.directorsService.create(director);
+  }
+
+  @Get()
+  async findAll(): Promise<Director[]> {
+    return this.directorsService.findAll();
   }
 }

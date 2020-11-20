@@ -17,4 +17,8 @@ export class DirectorsService {
   async getDirectorsByIds(ids: number[]): Promise<Director[]> {
     return await this.directorRepository.find({ id: In(ids) });
   }
+
+  async findAll(): Promise<Director[]> {
+    return await this.directorRepository.find();
+  }
 }

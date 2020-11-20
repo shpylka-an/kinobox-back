@@ -1,32 +1,37 @@
-import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { Ratings } from '../movie.entity';
 
-// tslint:disable:max-classes-per-file
-export class AttributesDto {
+export class CreateMovieDto {
   @IsNotEmpty()
+  @IsString()
   title: string;
 
   @IsNotEmpty()
+  @IsString()
   description: string;
 
+  @IsNotEmpty()
+  @IsISO8601()
   releaseDate: Date;
 
+  @IsNotEmpty()
   @IsEnum(Ratings)
   rating: Ratings;
-}
 
-export class RelationshipsDto {
+  @IsNotEmpty()
+  @IsNumber()
+  duration: number;
+
+  @IsArray()
   actors: number[];
+
+  @IsArray()
   directors: number[];
-}
-
-export class CreateMovieDto {
-  @ValidateNested()
-  @Type(() => AttributesDto)
-  attributes: AttributesDto;
-
-  @ValidateNested()
-  @Type(() => RelationshipsDto)
-  relationships: RelationshipsDto;
 }

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { MovieRepository } from './movie.repository';
 import { FilesService } from '../files/files.service';
 import { Movie } from './movie.entity';
-import { UpdateMovieDto } from './dto/update-movie.dto';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { ActorsService } from '../actors/actors.service';
 import { DirectorsService } from '../directors/directors.service';
+import { UpdateMovieDto } from './dto/update-movie.dto';
+import slugify from 'slugify';
 
 @Injectable()
 export class MovieService {
@@ -21,20 +22,50 @@ export class MovieService {
     return await this.movieRepository.find();
   }
 
-  async create(createMovieDto: CreateMovieDto): Promise<Movie> {
-    const { attributes, relationships } = createMovieDto;
-    const actors = await this.actorsService.getActorsByIds(relationships.actors);
-    const directors = await this.directorsService.getDirectorsByIds(
-      relationships.directors,
-    );
-    return await this.movieRepository.createNewMovie(attributes, actors, directors);
+  async findOne(id: number): Promise<Movie> {
+    return this.movieRepository.findOne(id);
   }
 
-  async update(
-    id: string,
-    data: Partial<UpdateMovieDto>,
-  ): Promise<UpdateResult> {
-    return await this.movieRepository.update(id, data);
+  async create(movie: CreateMovieDto): Promise<Movie> {
+    const actors = await this.actorsService.getActorsByIds(movie.actors);
+    const directors = await this.directorsService.getDirectorsByIds(
+      movie.directors,
+    );
+
+    const movieData = {
+      ...movie,
+      slug: slugify(movie.title, { replacement: '_', lower: true }),
+    };
+
+    return this.movieRepository.createOne(movieData, { actors, directors });
+  }
+
+  async update(id: number, attributes: UpdateMovieDto): Promise<Movie> {
+    const movieData: UpdateMovieDto & { slug?: string } = {
+      ...attributes,
+    };
+
+    if (attributes.title) {
+      movieData.slug = slugify(attributes.title, {
+        replacement: '_',
+        lower: true,
+      });
+    }
+
+    let actors = null;
+    let directors = null;
+
+    if (attributes.actors && attributes.actors.length > 0) {
+      actors = await this.actorsService.getActorsByIds(attributes.actors);
+    }
+
+    if (attributes.directors && attributes.directors.length > 0) {
+      directors = await this.directorsService.getDirectorsByIds(
+        attributes.directors,
+      );
+    }
+
+    return this.movieRepository.updateOne(id, movieData, { directors, actors });
   }
 
   async delete(id: string): Promise<DeleteResult> {

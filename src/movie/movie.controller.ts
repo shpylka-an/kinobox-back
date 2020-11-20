@@ -1,9 +1,12 @@
 import {
   Body,
-  Controller, Delete, Get,
+  Controller,
+  Delete,
+  Get,
   HttpException,
   HttpStatus,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   UploadedFiles,
   UseGuards,
@@ -34,9 +37,14 @@ export class MovieController {
     return this.movieService.findAll();
   }
 
+  @Get('/:id')
+  async findOne(@Param('id') id): Promise<Movie> {
+    return this.movieService.findOne(id);
+  }
+
   @Patch('/:id')
-  async update(@Body() updateMovieDto: Partial<UpdateMovieDto>, @Param('id') id) {
-    return await this.movieService.update(id, updateMovieDto);
+  async update(@Body() updateMovieDto: UpdateMovieDto, @Param('id') id) {
+    return this.movieService.update(id, updateMovieDto);
   }
 
   @Delete('/:id')

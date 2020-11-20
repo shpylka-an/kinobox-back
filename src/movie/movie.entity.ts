@@ -50,6 +50,7 @@ export class Movie {
   @ManyToMany(
     () => Actor,
     actor => actor.movies,
+    { eager: true },
   )
   @JoinTable({
     name: 'actors_movies',
@@ -61,6 +62,7 @@ export class Movie {
   @ManyToMany(
     () => Director,
     director => director.movies,
+    { eager: true },
   )
   @JoinTable({
     name: 'directors_movies',
