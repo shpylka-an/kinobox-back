@@ -42,7 +42,7 @@ export class AuthService {
 
     return {
       expires_in: 86400,
-      access_token: accessToken,
+      accessToken,
       user: {
         name: user.username,
         avatar: user.avatar,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, FindManyOptions, MoreThan } from 'typeorm';
 import { MovieRepository } from './movie.repository';
 import { FilesService } from '../files/files.service';
 import { Movie } from './movie.entity';
@@ -18,8 +18,20 @@ export class MovieService {
     private readonly directorsService: DirectorsService,
   ) {}
 
-  async findAll(): Promise<Movie[]> {
-    return await this.movieRepository.find();
+  async findAll(page: number = 1): Promise<{ count: number; items: Movie[] }> {
+    const [items, count] = await this.movieRepository.findAndCount({
+      relations: ['cast', 'directors'],
+      take: 10,
+      skip: 10 * (page - 1),
+      order: {
+        id: 'ASC',
+      },
+    });
+
+    return {
+      items,
+      count,
+    };
   }
 
   async findOne(id: number): Promise<Movie> {

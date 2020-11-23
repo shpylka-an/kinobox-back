@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -33,8 +34,10 @@ export class MovieController {
   }
 
   @Get()
-  async findAll(): Promise<Movie[]> {
-    return this.movieService.findAll();
+  async findAll(
+    @Query('page') page: number,
+  ): Promise<{ count: number; items: Movie[] }> {
+    return this.movieService.findAll(page);
   }
 
   @Get('/:id')
