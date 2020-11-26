@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { DeleteResult, In, Repository, UpdateResult } from 'typeorm';
 import { Actor } from './actor.entity';
 
 @Injectable()
@@ -10,15 +10,23 @@ export class ActorsService {
     private readonly actorsRepository: Repository<Actor>,
   ) {}
 
-  async create(actor: Actor): Promise<Actor> {
-    return await this.actorsRepository.save(actor);
+  create(actor: Actor): Promise<Actor> {
+    return this.actorsRepository.save(actor);
   }
 
-  async getActorsByIds(ids: number[]) {
+  getActorsByIds(ids: number[]): Promise<Actor[]> {
     return this.actorsRepository.find({ id: In(ids) });
   }
 
-  async findAll(): Promise<Actor[]> {
-    return await this.actorsRepository.find();
+  findAll(): Promise<Actor[]> {
+    return this.actorsRepository.find();
+  }
+
+  delete(id: string): Promise<DeleteResult> {
+    return this.actorsRepository.delete(id);
+  }
+
+  update(id: string, actor: Actor): Promise<UpdateResult> {
+    return this.actorsRepository.update(id, actor);
   }
 }

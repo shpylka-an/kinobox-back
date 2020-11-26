@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, FindManyOptions, MoreThan } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { MovieRepository } from './movie.repository';
 import { FilesService } from '../files/files.service';
 import { Movie } from './movie.entity';
