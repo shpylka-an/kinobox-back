@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, UpdateResult } from 'typeorm';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { Actor } from '../actors/actor.entity';
@@ -52,10 +52,9 @@ export class MovieRepository extends Repository<Movie> {
     return this.save(movie);
   }
 
-  async updateFiles(id: number, preview, videoFile) {
-    const movie = await this.findOne({ id });
-    return await this.update(id, {
-      ...movie,
+  async updateFiles(id: string, preview, videoFile): Promise<UpdateResult> {
+    return this.update(id, {
+      isPublished: true,
       preview,
       videoFile,
     });

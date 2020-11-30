@@ -10,6 +10,7 @@ import {
 import { PublicFile } from '../files/file.entity';
 import { Actor } from '../actors/actor.entity';
 import { Director } from '../directors/director.entity';
+import { User } from '../users/user.entity';
 
 export enum Ratings {
   TVMA = 'TV-MA',
@@ -50,7 +51,7 @@ export class Movie {
   @ManyToMany(
     () => Actor,
     actor => actor.movies,
-    { eager: true },
+    { eager: false },
   )
   @JoinTable({
     name: 'actors_movies',
@@ -62,7 +63,7 @@ export class Movie {
   @ManyToMany(
     () => Director,
     director => director.movies,
-    { eager: true },
+    { eager: false },
   )
   @JoinTable({
     name: 'directors_movies',
@@ -81,4 +82,11 @@ export class Movie {
     type: 'int',
   })
   duration: number;
+
+  @ManyToMany(
+    () => User,
+    user => user.list,
+    { eager: false },
+  )
+  users: User[];
 }

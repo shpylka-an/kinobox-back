@@ -25,6 +25,11 @@ export class DirectorsController {
     return this.directorsService.findAll();
   }
 
+  @Get('/:id')
+  findOne(@Param('id') id: string): Promise<Director> {
+    return this.directorsService.findOne(id);
+  }
+
   @Put('/:id')
   update(@Param('id') id, @Body() director: Director): Promise<UpdateResult> {
     return this.directorsService.update(id, director);

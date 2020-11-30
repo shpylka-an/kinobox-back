@@ -22,6 +22,10 @@ export class DirectorsService {
     return this.directorRepository.find();
   }
 
+  findOne(id: string): Promise<Director> {
+    return this.directorRepository.findOne(id);
+  }
+
   update(id: string, director: Director): Promise<UpdateResult> {
     return this.directorRepository.update(id, director);
   }

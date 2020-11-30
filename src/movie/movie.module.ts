@@ -6,6 +6,7 @@ import { MovieRepository } from './movie.repository';
 import { FilesModule } from '../files/files.module';
 import { ActorsModule } from '../actors/actors.module';
 import { DirectorsModule } from '../directors/directors.module';
+import { UserModule } from '../users/user.module';
 
 @Module({
   providers: [MovieService],
@@ -14,7 +15,9 @@ import { DirectorsModule } from '../directors/directors.module';
     FilesModule,
     ActorsModule,
     DirectorsModule,
+    UserModule,
   ],
   controllers: [MovieController],
+  exports: [MovieService],
 })
 export class MovieModule {}

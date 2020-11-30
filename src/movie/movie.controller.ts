@@ -21,6 +21,7 @@ import { MovieService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { CurrentUser } from '../users/user.decorator';
 
 @Roles('admin')
 @Controller('movies')
@@ -40,9 +41,24 @@ export class MovieController {
     return this.movieService.findAll(page);
   }
 
+  @Get('/suggested')
+  async getSuggestedMovies() {
+    return this.movieService.getSuggestedMovies();
+  }
+
+  @Post('/:id/add-to-list')
+  async addToMyList(@CurrentUser() user, @Param('id') id: string) {
+    return this.movieService.addMovieToList(user.userId, id);
+  }
+
+  @Get('/list')
+  async getMyList(@CurrentUser() user) {
+    return this.movieService.getList(user.userId);
+  }
+
   @Get('/:id')
   async findOne(@Param('id') id): Promise<Movie> {
-    return this.movieService.findOne(id);
+    return this.movieService.getMovie(id);
   }
 
   @Patch('/:id')
@@ -52,17 +68,17 @@ export class MovieController {
 
   @Delete('/:id')
   async delete(@Param('id') id: string) {
-    await this.movieService.delete(id);
+    return this.movieService.delete(id);
   }
 
-  @Post(':id/upload')
+  @Post('/:id/upload')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'preview', maxCount: 1 },
       { name: 'videoFile', maxCount: 1 },
     ]),
   )
-  async upload(@UploadedFiles() files, @Param('id') id: number) {
+  async upload(@UploadedFiles() files, @Param('id') id: string) {
     try {
       return await this.movieService.uploadFiles(
         id,

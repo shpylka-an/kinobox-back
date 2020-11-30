@@ -25,6 +25,11 @@ export class ActorsController {
     return this.actorsService.findAll();
   }
 
+  @Get('/:id')
+  findOne(@Param('id') id: string): Promise<Actor> {
+    return this.actorsService.findOne(id);
+  }
+
   @Put('/:id')
   update(@Param('id') id, @Body() actor: Actor): Promise<UpdateResult> {
     return this.actorsService.update(id, actor);

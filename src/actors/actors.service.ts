@@ -22,6 +22,10 @@ export class ActorsService {
     return this.actorsRepository.find();
   }
 
+  findOne(id: string): Promise<Actor> {
+    return this.actorsRepository.findOne(id);
+  }
+
   delete(id: string): Promise<DeleteResult> {
     return this.actorsRepository.delete(id);
   }
