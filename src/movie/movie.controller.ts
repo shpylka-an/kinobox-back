@@ -36,9 +36,12 @@ export class MovieController {
 
   @Get()
   async findAll(
-    @Query('page') page: number,
-  ): Promise<{ count: number; items: Movie[] }> {
-    return this.movieService.findAll(page);
+    @Query('search') search: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+    return this.movieService.findAll(search, { page, limit });
   }
 
   @Get('/suggested')
@@ -47,13 +50,18 @@ export class MovieController {
   }
 
   @Post('/:id/add-to-list')
-  async addToMyList(@CurrentUser() user, @Param('id') id: string) {
+  async addMovieToMyList(@CurrentUser() user, @Param('id') id: string) {
     return this.movieService.addMovieToList(user.userId, id);
   }
 
   @Get('/list')
-  async getMyList(@CurrentUser() user) {
-    return this.movieService.getList(user.userId);
+  async getMoviesFromList(@CurrentUser() user) {
+    return this.movieService.getMoviesFromList(user.userId);
+  }
+
+  @Delete('/:id/remove-from-list')
+  async removeMovieFromList(@CurrentUser() user, @Param('id') id: string) {
+    return this.movieService.removeMovieFromList(user.userId, id);
   }
 
   @Get('/:id')

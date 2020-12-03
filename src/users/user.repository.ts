@@ -6,12 +6,6 @@ import { Movie } from '../movie/movie.entity';
 @Injectable()
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  findOneById(id: number) {
-    return this.findOne({
-      where: { id },
-    });
-  }
-
   findOneByEmail(email: string) {
     return this.findOne({
       where: { email },
@@ -22,8 +16,9 @@ export class UserRepository extends Repository<User> {
     const user = await this.findOne(userId, {
       relations: ['list'],
     });
-    user.list.push(movie);
+    user.movies.push(movie);
     await this.save(user);
-    return user.list;
+
+    return user.movies;
   }
 }

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MovieRepository } from './movie.repository';
 import { FilesService } from '../files/files.service';
 import { Movie } from './movie.entity';
@@ -8,6 +13,11 @@ import { DirectorsService } from '../directors/directors.service';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { UserService } from '../users/user.service';
 import slugify from 'slugify';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class MovieService {
@@ -19,20 +29,19 @@ export class MovieService {
     private readonly userService: UserService,
   ) {}
 
-  async findAll(page: number = 1): Promise<{ count: number; items: Movie[] }> {
-    const [items, count] = await this.movieRepository.findAndCount({
-      relations: ['cast', 'directors'],
-      take: 10,
-      skip: 10 * (page - 1),
-      order: {
-        id: 'ASC',
-      },
-    });
+  async findAll(
+    search: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Movie>> {
+    const movieBuilder = this.movieRepository.createQueryBuilder('m');
 
-    return {
-      items,
-      count,
-    };
+    if (search) {
+      movieBuilder.where('LOWER(m.title) like LOWER(:search)', {
+        search: `%${search}%`,
+      });
+    }
+
+    return paginate<Movie>(movieBuilder, options);
   }
 
   async getMovie(id: string): Promise<Movie> {
@@ -93,10 +102,11 @@ export class MovieService {
     const movie = await this.getMovie(id);
 
     if (!movie) {
-      throw new NotFoundException(`Movie with id = ${id} does not exist`);
+      throw new NotFoundException(`Movie not found`);
     }
 
     await this.movieRepository.delete(id);
+
     return movie;
   }
 
@@ -170,20 +180,35 @@ export class MovieService {
     ];
   }
 
-  async addMovieToList(userId: string, movieId: string) {
+  async addMovieToList(userId: string, movieId: string): Promise<Movie> {
     const movie = await this.movieRepository.findOne(movieId);
+
     if (!movie) {
       throw new NotFoundException('Movie not found');
     }
-    return this.userService.addMovieToList(userId, movie);
+
+    if (await this.movieRepository.getMovieFromList(userId, movieId)) {
+      throw new ConflictException('Movie already in list');
+    }
+
+    await this.movieRepository.addMovieToList(userId, movieId);
+
+    return movie;
   }
 
-  async getList(userId: string) {
-    const { list } = await this.userService.findOneById(+userId, {
-      relations: ['list'],
-    });
-    return {
-      list,
-    };
+  async removeMovieFromList(userId: string, movieId: string): Promise<Movie> {
+    const movie = await this.movieRepository.findOne(movieId);
+
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
+
+    await this.movieRepository.removeMovieFromList(userId, movieId);
+
+    return movie;
+  }
+
+  async getMoviesFromList(userId: string): Promise<Movie[]> {
+    return this.movieRepository.getMoviesFromList(userId);
   }
 }

@@ -5,6 +5,7 @@ import { Actor } from '../actors/actor.entity';
 import { Director } from '../directors/director.entity';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import slugify from 'slugify';
+import { User } from '../users/user.entity';
 
 @EntityRepository(Movie)
 export class MovieRepository extends Repository<Movie> {
@@ -58,5 +59,37 @@ export class MovieRepository extends Repository<Movie> {
       preview,
       videoFile,
     });
+  }
+
+  async getMoviesFromList(userId: string): Promise<Movie[]> {
+    return this.createQueryBuilder('movie')
+      .innerJoin('movie.users', 'user')
+      .where('user.id = :id', { id: userId })
+      .getMany();
+  }
+
+  async getMovieFromList(
+    userId: string,
+    movieId: string,
+  ): Promise<Movie | undefined> {
+    return this.createQueryBuilder('movie')
+      .innerJoin('movie.users', 'user')
+      .where('user.id = :id', { id: userId })
+      .where('movie.id = :id', { id: movieId })
+      .getOne();
+  }
+
+  async addMovieToList(userId: string, movieId: string): Promise<void> {
+    return this.createQueryBuilder()
+      .relation(User, 'movies')
+      .of(userId)
+      .add(movieId);
+  }
+
+  async removeMovieFromList(userId: string, movieId: string): Promise<void> {
+    return this.createQueryBuilder()
+      .relation(User, 'movies')
+      .of(userId)
+      .remove(movieId);
   }
 }

@@ -85,8 +85,7 @@ export class Movie {
 
   @ManyToMany(
     () => User,
-    user => user.list,
-    { eager: false },
+    user => user.movies,
   )
   users: User[];
 }

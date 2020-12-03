@@ -44,12 +44,13 @@ export class User {
   roles?: Role[];
 
   @ManyToMany(
-    type => Movie,
+    () => Movie,
+    movie => movie.users,
   )
   @JoinTable({
     name: 'users_movies',
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'movie_id', referencedColumnName: 'id' },
   })
-  list?: Movie[];
+  movies?: Movie[];
 }
