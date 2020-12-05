@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,7 +10,6 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { ActorsService } from '../actors/actors.service';
 import { DirectorsService } from '../directors/directors.service';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { UserService } from '../users/user.service';
 import slugify from 'slugify';
 import {
   IPaginationOptions,
@@ -26,20 +24,23 @@ export class MovieService {
     private readonly filesService: FilesService,
     private readonly actorsService: ActorsService,
     private readonly directorsService: DirectorsService,
-    private readonly userService: UserService,
   ) {}
 
   async findAll(
     search: string,
     options: IPaginationOptions,
   ): Promise<Pagination<Movie>> {
-    const movieBuilder = this.movieRepository.createQueryBuilder('m');
+    const movieBuilder = this.movieRepository.createQueryBuilder('movie');
 
     if (search) {
-      movieBuilder.where('LOWER(m.title) like LOWER(:search)', {
+      movieBuilder.where('LOWER(movie.title) like LOWER(:search)', {
         search: `%${search}%`,
       });
     }
+
+    movieBuilder
+      .leftJoinAndSelect('movie.directors', 'director')
+      .leftJoinAndSelect('movie.cast', 'actor');
 
     return paginate<Movie>(movieBuilder, options);
   }
@@ -99,7 +100,7 @@ export class MovieService {
   }
 
   async delete(id: string): Promise<Movie> {
-    const movie = await this.getMovie(id);
+    const movie = await this.movieRepository.findOne(id);
 
     if (!movie) {
       throw new NotFoundException(`Movie not found`);
