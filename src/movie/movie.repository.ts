@@ -65,6 +65,8 @@ export class MovieRepository extends Repository<Movie> {
     return this.createQueryBuilder('movie')
       .innerJoin('movie.users', 'user')
       .where('user.id = :id', { id: userId })
+      .innerJoinAndSelect('movie.preview', 'preview')
+      .innerJoinAndSelect('movie.videoFile', 'videoFile')
       .getMany();
   }
 
