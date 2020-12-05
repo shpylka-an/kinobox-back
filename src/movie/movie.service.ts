@@ -28,6 +28,7 @@ export class MovieService {
 
   async findAll(
     search: string,
+    userId: string,
     options: IPaginationOptions,
   ): Promise<Pagination<Movie>> {
     const movieBuilder = this.movieRepository.createQueryBuilder('movie');
@@ -42,7 +43,16 @@ export class MovieService {
       .leftJoinAndSelect('movie.directors', 'director')
       .leftJoinAndSelect('movie.cast', 'actor');
 
-    return paginate<Movie>(movieBuilder, options);
+    const moviesPagination = await paginate<Movie>(movieBuilder, options);
+    const moviesFromList = await this.getMoviesFromList(userId);
+
+    const items = moviesPagination.items.map(movie => {
+      movie.isInList = !!moviesFromList.find(movieFromList => {
+        return movie.id === movieFromList.id;
+      });
+    });
+
+    return { items, ...moviesPagination };
   }
 
   async getMovie(id: string): Promise<Movie> {

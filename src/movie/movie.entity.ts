@@ -48,6 +48,8 @@ export class Movie {
   @Column({ default: false, name: 'is_published' })
   isPublished?: boolean;
 
+  isInList?: boolean;
+
   @ManyToMany(
     () => Actor,
     actor => actor.movies,

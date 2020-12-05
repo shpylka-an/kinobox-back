@@ -39,9 +39,10 @@ export class MovieController {
     @Query('search') search: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @CurrentUser() user,
   ) {
     limit = limit > 100 ? 100 : limit;
-    return this.movieService.findAll(search, { page, limit });
+    return this.movieService.findAll(search, user.userId, { page, limit });
   }
 
   @Get('/suggested')
