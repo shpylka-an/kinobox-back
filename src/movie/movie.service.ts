@@ -68,7 +68,7 @@ export class MovieService {
   }
 
   async create(movie: CreateMovieDto): Promise<Movie> {
-    const actors = await this.actorsService.getActorsByIds(movie.actors);
+    const actors = await this.actorsService.findByIds(movie.actors);
     const directors = await this.directorsService.getDirectorsByIds(
       movie.directors,
     );
@@ -97,7 +97,7 @@ export class MovieService {
     let directors = null;
 
     if (attributes.actors && attributes.actors.length > 0) {
-      actors = await this.actorsService.getActorsByIds(attributes.actors);
+      actors = await this.actorsService.findByIds(attributes.actors);
     }
 
     if (attributes.directors && attributes.directors.length > 0) {
