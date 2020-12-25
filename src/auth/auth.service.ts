@@ -1,9 +1,6 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '../users/user.service';
 import { RegisterDto } from './dto/register.dto';
@@ -17,16 +14,16 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly roleService: RoleService,
+    private readonly configService: ConfigService,
   ) {}
 
-  private async validate(
-    email: string,
-    password: string,
-  ): Promise<User | null> {
+  async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findOneByEmail(email);
+
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
+
     return null;
   }
 
@@ -35,13 +32,13 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      name: user.username,
       roles,
     };
+
     const accessToken = this.jwtService.sign(payload);
 
     return {
-      expires_in: 86400,
+      expiresIn: this.configService.get('expiresIn'),
       accessToken,
       user: {
         name: user.username,
@@ -51,26 +48,21 @@ export class AuthService {
     };
   }
 
-  public async login(credentials: LoginDto): Promise<any> {
-    const user = await this.validate(credentials.email, credentials.password);
+  async login(credentials: LoginDto) {
+    const user = await this.validateUser(
+      credentials.email,
+      credentials.password,
+    );
 
     if (!user) {
-      throw new NotFoundException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return this.authenticated(user);
   }
 
-  public async register(userData: RegisterDto): Promise<any> {
-    userData.password = await bcrypt.hash(userData.password, 12);
-    try {
-      const user = await this.userService.create(userData);
-
-      return this.authenticated(user);
-    } catch (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('User with this email already exists');
-      }
-    }
+  async register(userData: RegisterDto): Promise<any> {
+    const user = await this.userService.create(userData);
+    return this.authenticated(user);
   }
 }

@@ -7,14 +7,16 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
+  Put, UseGuards,
 } from '@nestjs/common';
 import { ActorsService } from './actors.service';
 import { Actor } from './actor.entity';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
+import { JwtAuthGuard } from '../shared/jwt-auth.guard';
 
 @Controller('actors')
+@UseGuards(JwtAuthGuard)
 export class ActorsController {
   constructor(private readonly actorsService: ActorsService) {}
 

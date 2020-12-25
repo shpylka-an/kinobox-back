@@ -21,7 +21,7 @@ import { MovieService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { CurrentUser } from '../users/user.decorator';
+import { CurrentUser } from '../shared/user.decorator';
 
 @Roles('admin')
 @Controller('movies')
