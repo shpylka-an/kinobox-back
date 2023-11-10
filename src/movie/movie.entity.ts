@@ -7,7 +7,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PublicFile } from '../files/file.entity';
 import { Actor } from '../actors/actor.entity';
 import { Director } from '../directors/director.entity';
 import { User } from '../users/user.entity';
@@ -37,12 +36,10 @@ export class Movie {
   @Column({ type: 'date', name: 'release_date' })
   releaseDate: Date;
 
-  @JoinColumn({ name: 'preview_id' })
-  @OneToOne(() => PublicFile, { eager: true, nullable: true })
-  preview?: PublicFile;
+  @Column({ nullable: true })
+  preview?: string;
 
-  @JoinColumn({ name: 'video_file_id' })
-  @OneToOne(() => PublicFile, { eager: true, nullable: true })
+  @Column({ nullable: true })
   videoFile?: string;
 
   @Column({ default: false, name: 'is_published' })
@@ -50,11 +47,7 @@ export class Movie {
 
   isInList?: boolean;
 
-  @ManyToMany(
-    () => Actor,
-    actor => actor.movies,
-    { eager: false },
-  )
+  @ManyToMany(() => Actor, (actor) => actor.movies, { eager: false })
   @JoinTable({
     name: 'actors_movies',
     joinColumn: { name: 'movie_id', referencedColumnName: 'id' },
@@ -62,11 +55,7 @@ export class Movie {
   })
   cast: Actor[];
 
-  @ManyToMany(
-    () => Director,
-    director => director.movies,
-    { eager: false },
-  )
+  @ManyToMany(() => Director, (director) => director.movies, { eager: false })
   @JoinTable({
     name: 'directors_movies',
     joinColumn: { name: 'movie_id', referencedColumnName: 'id' },
@@ -85,9 +74,6 @@ export class Movie {
   })
   duration: number;
 
-  @ManyToMany(
-    () => User,
-    user => user.movies,
-  )
+  @ManyToMany(() => User, (user) => user.movies)
   users: User[];
 }

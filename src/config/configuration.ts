@@ -22,9 +22,6 @@ export const configuration = () => {
     port: Number(process.env.PORT),
     jwtSecret: process.env.JWT_SECRET,
     expiresIn: process.env.EXPIRES_IN,
-    awsS3BucketName: process.env.AWS_S3_BUCKET_NAME,
-    awsAccessKetId: process.env.AWS_ACCESS_KEY_ID,
-    awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     database: {
       type: 'postgres',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],

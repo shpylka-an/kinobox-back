@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -22,6 +20,8 @@ import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { CurrentUser } from '../shared/user.decorator';
+import { diskStorage } from 'multer';
+import { v4 as uuid } from 'uuid';
 
 @Roles('admin')
 @Controller('movies')
@@ -82,23 +82,37 @@ export class MovieController {
 
   @Post('/:id/upload')
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'preview', maxCount: 1 },
-      { name: 'videoFile', maxCount: 1 },
-    ]),
+    FileFieldsInterceptor(
+      [
+        { name: 'preview', maxCount: 1 },
+        { name: 'videoFile', maxCount: 1 },
+      ],
+      {
+        storage: diskStorage({
+          destination: 'public',
+          filename: (req, file, cb) => {
+            const directory = {
+              preview: 'previews',
+              videoFile: 'movies',
+            };
+            cb(
+              null,
+              `/${directory[file.fieldname]}/${uuid()}-${file.originalname}`,
+            );
+          },
+        }),
+      },
+    ),
   )
-  async upload(@UploadedFiles() files, @Param('id') id: string) {
-    try {
-      return await this.movieService.uploadFiles(
-        id,
-        files.preview[0],
-        files.videoFile[0],
-      );
-    } catch (err) {
-      throw new HttpException(
-        'Error loading files',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  async upload(
+    @UploadedFiles()
+    files: { preview: Express.Multer.File[]; videoFile: Express.Multer.File[] },
+    @Param('id') id: string,
+  ) {
+    return this.movieService.uploadFiles(
+      id,
+      files.preview[0],
+      files.videoFile[0],
+    );
   }
 }

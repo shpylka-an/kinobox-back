@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MovieRepository } from './movie.repository';
-import { FilesService } from '../files/files.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { ActorsService } from '../actors/actors.service';
@@ -21,7 +20,6 @@ import {
 export class MovieService {
   constructor(
     private readonly movieRepository: MovieRepository,
-    private readonly filesService: FilesService,
     private readonly actorsService: ActorsService,
     private readonly directorsService: DirectorsService,
   ) {}
@@ -46,8 +44,8 @@ export class MovieService {
     const moviesPagination = await paginate<Movie>(movieBuilder, options);
     const moviesFromList = await this.getMoviesFromList(userId);
 
-    const items = moviesPagination.items.map(movie => {
-      movie.isInList = !!moviesFromList.find(movieFromList => {
+    const items = moviesPagination.items.map((movie) => {
+      movie.isInList = !!moviesFromList.find((movieFromList) => {
         return movie.id === movieFromList.id;
       });
     });
@@ -126,21 +124,22 @@ export class MovieService {
     preview: Express.Multer.File,
     videoFile: Express.Multer.File,
   ) {
-    const previewModel = await this.filesService.uploadPreview(preview);
-    const videoFileModel = await this.filesService.uploadVideo(videoFile);
-
     await this.movieRepository.updateFiles(
       movieId,
-      previewModel,
-      videoFileModel,
+      preview.filename,
+      videoFile.filename,
     );
 
     return {
-      preview: previewModel,
-      videoFile: videoFileModel,
+      movieId,
+      preview: preview.filename,
+      videoFile: videoFile.filename,
     };
   }
 
+  /**
+   * Hardcoded suggested movies
+   */
   async getSuggestedMovies() {
     const newReleases = await this.movieRepository.find({
       relations: ['cast', 'directors'],

@@ -53,11 +53,15 @@ export class MovieRepository extends Repository<Movie> {
     return this.save(movie);
   }
 
-  async updateFiles(id: string, preview, videoFile): Promise<UpdateResult> {
+  async updateFiles(
+    id: string,
+    previewUrl: string,
+    videoFileUrl: string,
+  ): Promise<UpdateResult> {
     return this.update(id, {
       isPublished: true,
-      preview,
-      videoFile,
+      preview: previewUrl,
+      videoFile: videoFileUrl,
     });
   }
 

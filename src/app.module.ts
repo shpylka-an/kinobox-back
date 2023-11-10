@@ -7,7 +7,6 @@ import { UserModule } from './users/user.module';
 import { MovieModule } from './movie/movie.module';
 import { SharedModule } from './shared/shared.module';
 import { DatabaseConfig } from './database.config';
-import { FilesModule } from './files/files.module';
 import { ActorsModule } from './actors/actors.module';
 import { DirectorsModule } from './directors/directors.module';
 import { configuration } from './config/configuration';
@@ -26,7 +25,6 @@ import { configuration } from './config/configuration';
     UserModule,
     MovieModule,
     SharedModule,
-    FilesModule,
     ActorsModule,
     DirectorsModule,
   ],
